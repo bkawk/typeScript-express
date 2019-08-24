@@ -1,9 +1,9 @@
-import * as express from 'express'
+import {Router} from 'express';
+import {User} from "./controllers/user";
 
-const router = express.Router();
-const exampleRoute = require('./routes/example');
+const router = Router();
 
-router.use('/api/v1/example', exampleRoute);
-
+router.post('/user/login', User.validateLogin, User.login);
+router.post('/user/register', User.validateRegister, User.register);
 
 export {router};
