@@ -61,14 +61,19 @@ class User {
         if (!hashedPassword) {
           res.status(500).send({ message: "Failed to encrypt your password" });
         } else {
-          const pkey = await PrivateKey.randomKey();
-          const apiKey = await pkey.toWif();
-          const user = new UserModel(<IUser>{email:email, password:hashedPassword, apiKey});
-          const saved = await user.save();
-          if (!saved) {
-            res.status(500).send({ message: "Failed to register you" });
+          const privateKey = await PrivateKey.randomKey();
+          const apiKey = await privateKey.toWif();
+          const validKey = PrivateKey.isValid(apiKey);
+          if (!validKey) {
+            res.status(500).send({ message: "Generated api key invalid" });
           } else {
-            res.status(200).send({ message: "You are now registered", apiKey });
+            const user = new UserModel(<IUser>{email:email, password:hashedPassword, apiKey});
+            const saved = await user.save();
+            if (!saved) {
+              res.status(500).send({ message: "Failed to register you" });
+            } else {
+              res.status(200).send({ message: "You are now registered", apiKey });
+            }
           }
         }
     } else {
