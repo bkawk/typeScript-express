@@ -2,8 +2,9 @@
 import { Request, Response, NextFunction } from 'express';
 import * as Joi from '@hapi/joi';
 import * as bcrypt from 'bcrypt';
-import UserModel, { IUser } from '../models/example'
-import * as jwt from 'jsonwebtoken'
+import UserModel, { IUser } from '../models/users';
+import * as jwt from 'jsonwebtoken';
+import {PrivateKey} from 'eosjs-ecc';
 
 class User {
 
@@ -23,15 +24,17 @@ class User {
     const email = req.body.email;
     const password = req.body.password;
     const account = await UserModel.findOne({email}).exec();
+    const userId = account._id;
+    const apiKey = account.apiKey;
     if (!account) {
       res.status(400).send({ message: "You have not registered" });
     } else {
       const passwordsMatch = await bcrypt.compare(password, account.password);
       if (!passwordsMatch) {
-        res.status(400).send({ message: "Incorrect Password" });
+        res.status(400).send({ message: "Incorrect password" });
       } else {
-        const token = jwt.sign({ email: account.email, id: account._id }, process.env.JWT_SECRET);
-        res.status(200).send({ message: "You are now logged-in", token });
+        const jwtToken = jwt.sign({ email, userId }, process.env.JWT_SECRET);
+        res.status(200).send({ message: "You are now logged-in", jwtToken, apiKey });
       }
     }
   };
@@ -58,12 +61,14 @@ class User {
         if (!hashedPassword) {
           res.status(500).send({ message: "Failed to encrypt your password" });
         } else {
-          const user = new UserModel(<IUser>{email:email, password:hashedPassword});
+          const pkey = await PrivateKey.randomKey();
+          const apiKey = await pkey.toWif();
+          const user = new UserModel(<IUser>{email:email, password:hashedPassword, apiKey});
           const saved = await user.save();
           if (!saved) {
             res.status(500).send({ message: "Failed to register you" });
           } else {
-            res.status(200).send({ message: "You are now registered" });
+            res.status(200).send({ message: "You are now registered", apiKey });
           }
         }
     } else {

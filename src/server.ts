@@ -46,6 +46,15 @@ app.use(cors(corsOptions));
 app.use(rateLimiter);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+// Catch Syntax Error in JSON
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  if (err.status === 400 && err instanceof SyntaxError && 'body' in err) {
+    res.status(200).send({ message: "JSON Syntax Error" });
+  } else {
+    next();
+  }
+});
 app.use('/', router);
 
 let http = require("http").Server(app);
