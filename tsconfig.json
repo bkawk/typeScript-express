@@ -12,8 +12,7 @@
         "typeRoots": [ "./types", "./node_modules/@types"],
         "paths": {
             "*": [
-                "node_modules/",
-                "routes/types/*"
+                "node_modules/"
             ]
         }
     },

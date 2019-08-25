@@ -1,16 +1,16 @@
 import * as mongoose from 'mongoose';
-import { Schema, Document } from 'mongoose';
+import { Document, Schema } from 'mongoose';
 
-export interface IFolder extends Document {
+interface FolderInterface extends Document {
   name: string;
   userId: string;
 }
 
-const FolderSchema: Schema = new Schema({
+const folderSchema: Schema = new Schema({
   name: { type: String, required: true },
-  userId: { type: String, required: true }
+  userId: { type: String, required: true },
 });
 
-export default mongoose.model<IFolder>('Folder', FolderSchema);
+const folderModel = mongoose.model<FolderInterface>('Folder', folderSchema);
 
-
+export {folderModel, FolderInterface};

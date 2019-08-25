@@ -1,6 +1,6 @@
 import {Router} from 'express';
-import {User} from "./controllers/user";
-import {Folder} from "./controllers/folder";
+import {Folder} from './controllers/folder';
+import {User} from './controllers/user';
 
 const router = Router();
 
@@ -17,8 +17,5 @@ router.get('/folder/list', Folder.validateList, Folder.list);
 // router.delete('/files/delete', Files.validateLogin, Files.login);
 // router.put('/files/edit', Files.validateLogin, Files.login);
 // router.get('/files/list', Files.validateLogin, Files.login);
-
-
-
 
 export {router};

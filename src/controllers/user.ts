@@ -3,7 +3,7 @@ import * as bcrypt from 'bcrypt';
 import {PrivateKey} from 'eosjs-ecc';
 import {NextFunction,  Request, Response } from 'express';
 import * as jwt from 'jsonwebtoken';
-import UserModel, { IUser } from '../models/users';
+import { userModel, UserModelInterface } from '../models/users';
 
 class User {
 
@@ -22,7 +22,7 @@ class User {
   static login = async (req: Request, res: Response) => {
     const email = req.body.email;
     const password = req.body.password;
-    const account = await UserModel.findOne({email}).exec();
+    const account = await userModel.findOne({email}).exec();
     const userId = account._id;
     const apiKey = account.apiKey;
     if (!account) {
@@ -53,7 +53,7 @@ class User {
   static register = async (req: Request, res: Response) => {
     const email = req.body.email;
     const password = req.body.password;
-    const alreadyRegistered = await UserModel.findOne({email}).exec();
+    const alreadyRegistered = await userModel.findOne({email}).exec();
     if (!alreadyRegistered) {
       const hashedPassword = await bcrypt.hash(password, 10);
       if (!hashedPassword) {
@@ -65,7 +65,7 @@ class User {
         if (!validKey) {
           res.status(500).send({ message: 'Generated api key invalid' });
         } else {
-          const user = new UserModel({email, password: hashedPassword, apiKey} as IUser);
+          const user = new userModel({email, password: hashedPassword, apiKey} as UserModelInterface);
           const saved = await user.save();
           if (!saved) {
             res.status(500).send({ message: 'Failed to register you' });
