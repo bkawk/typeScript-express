@@ -11,6 +11,7 @@
     "build": "tsc",
     "watch-ts": "tsc -w",
     "watch-node": "nodemon dist/server.js",
+    "lint": "tslint -c tslint.json --project tsconfig.json",
     "watch": "npm run generate && concurrently -k -p \"[{name}]\" -n \"TypeScript, Node\" -c \"yello.bold, cyan.bold\" \"npm run watch-ts\" \"npm run watch-node\""
   },
   "repository": {
@@ -60,6 +61,7 @@
     "mongoose": "^5.6.2",
     "morgan": "^1.9.1",
     "rate-limiter-flexible": "^1.1.1",
-    "socket.io": "^2.2.0"
+    "socket.io": "^2.2.0",
+    "tslint": "^5.19.0"
   }
 }
